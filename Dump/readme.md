@@ -1,1 +1,1 @@
-
+You have to import the dump into mysql, go to the main panel inside of the root "local instance", in here search for first button "File" and select "Run sql script". then search the file wherever you have downloaded. Then select and click "Run"
