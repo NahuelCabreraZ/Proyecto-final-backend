@@ -515,7 +515,7 @@ router.put('/clientes/:idclientes' , (req, res)=>{
     ////////////////////////////////////////////////////////////
 
 router.put('/bajacliente/:id', (req, res)=>{
-    // asigna a id_usuario el valor que recibe por el parametro 
+
     let id = req.params.id;
     console.log("el parametro que recibo es:", id);
      let query=`UPDATE dbweb.clientes SET estado='B' WHERE idclientes='${id}'`;
@@ -523,7 +523,7 @@ router.put('/bajacliente/:id', (req, res)=>{
         if(!err){
             res.json({
                 status: true,
-                mensaje:"El usuario se dio de baja correctamente"
+                mensaje:"El cliente se dio de baja correctamente"
             });
         }else{
             console.log(err)
@@ -544,12 +544,12 @@ router.put('/bajacliente/:id', (req, res)=>{
 router.put('/altacliente/:id', (req, res)=>{
     // asigna a id_usuario el valor que recibe por el parametro 
      let id  = req.params.id;
-     let query=`UPDATE clientes SET estado='A' WHERE id='${id}'`;
+     let query=`UPDATE clientes SET estado='A' WHERE idclientes='${id}'`;
      mysqlConeccion.query(query, (err, registros)=>{
         if(!err){
             res.json({
                 status: true,
-                mensaje:"El usuario se dio de alta correctamente"
+                mensaje:"El cliente se dio de alta correctamente"
             });
         }else{
             console.log(err)
