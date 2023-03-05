@@ -277,6 +277,22 @@ router.delete('/abogados/:idabogados', (req, res)=>{
          
     });
 
+
+// GET CLIENTES BY ID
+
+router.get('/clientes/:idclientes', (req, res)=>{
+    const { idclientes } = req.params;
+    mysqlConeccion.query('select * from dbweb.clientes WHERE idclientes=?', [idclientes], (err, registros)=>{
+        if(!err){
+            res.json(registros);
+        }else{
+            console.log(err)
+        }
+    })
+});
+
+
+
     /////////////////////////////////////////
     //FIN - LISTAR CLIENTES DE LA BASE DE DATOS//
     /////////////////////////////////////////
