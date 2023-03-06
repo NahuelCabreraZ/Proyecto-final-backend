@@ -510,7 +510,7 @@ router.put('/clientes/:idclientes' , (req, res)=>{
     let idclientes  = req.params.idclientes;
     const { dni, nombre, apellido , email, telefono, domicilio } =req.body  
     console.log(req.body)
-    let query=`UPDATE clientes SET dni='${dni}', nombre='${nombre}', apellido='${apellido}', email='${email}', telefono='${telefono}', domicilio='${domicilio}', fecha_modificacion=NOW() WHERE idclientes='${idclientes}'`;
+    let query=`UPDATE dbweb.clientes SET dni='${dni}', nombre='${nombre}', apellido='${apellido}', email='${email}', telefono='${telefono}', domicilio='${domicilio}', fecha_modificacion=NOW() WHERE idclientes='${idclientes}'`;
     mysqlConeccion.query(query, (err, registros)=>{
         if(!err){
             res.send('El Id que editamos es : '+idclientes+' y cambiamos muchos campos!!');
