@@ -191,25 +191,26 @@ router.post('/insertarabogados', (req, res)=>{
     //////////////////////////////////////////////////////////////
 
 //metodo para elimiinar los datos de un abogado en particular
-router.delete('/abogados/:idabogados', (req, res)=>{
-   //asigna a "let idabogados" el valor que recibe por el parametro 
+router.delete('/abogados/:idabogados', verificarToken, (req, res)=>{
    let idabogados  = req.params.idabogados; 
    jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-    if(error){
-        res.sendStatus(403);
-    }else{
-        let query=`DELETE FROM abogados WHERE idabogados='${idabogados}'`;
+             if(error){
+                res.sendStatus(403);
+             }else{
+        let query=`DELETE FROM dbweb.abogados WHERE idabogados='${idabogados}'`;
         mysqlConeccion.query(query, (err, registros)=>{
                 if(!err){
-                    res.send('El Id que ELIMINAMOS es : '+registros);
+                    res.json({
+                        status: true,
+                        mensaje:"El abogado se elimino de la base de datos"
+                    });
                 }else{
                     res.send('El error  es : '+ err); 
                 }
             })
         }
-    })
-});
-
+    });
+})
     ///////////////////////////////////////////////////////////////
     //metodo para elimiinar los datos de un abogado en particular//
     ///////////////////////////////////////////////////////////////
@@ -476,18 +477,17 @@ router.post('/abogadosxclientes', (req, res)=>{
     ////metodo para elimiinar los datos de un cliente en particular///
     ////////////////////////////////////////////////////////////
 
-router.delete('/clientes/:idclientes',verificarToken ,(req, res)=>{
-    //asigna a idclientes el valor que recibe por el parametro 
+router.delete('/clientes/:idclientes', verificarToken ,(req, res)=>{
     let idclientes  = req.params.id; 
-    jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-        if(error){
+        jwt.verify(req.token, 'siliconKey', (error, valido)=>{
+            if(error){
             res.sendStatus(403);
-        }else{
-            let query=`DELETE FROM clientes WHERE idclientes='${idclientes}'`;
-            mysqlConeccion.query(query, (err, registros)=>{
-                if(!err){
-                    res.send('El cliente que ELIMINAMOS es ID : '+idclientes);
-                }else{
+            }else{
+                let query=`DELETE FROM clientes WHERE idclientes='${idclientes}'`;
+                mysqlConeccion.query(query, (err, registros)=>{
+                    if(!err){
+                    res.send('El cliente que ELIMINAMOS es ID : '+ idclientes);
+                    }else{
                     res.send('El error  es : '+ err); 
                 }
             })
@@ -657,7 +657,7 @@ router.post('/login', (req, res)=>{
                 if(rows.length!=0){
                     const bcryptPassword = bcrypt.compareSync(password, rows[0].password);
                     if(bcryptPassword){
-                        jwt.sign({rows}, 'siliconKey', {expiresIn:'1200s'},(err, token)=>{
+                        jwt.sign({rows}, 'siliconKey', {expiresIn:'1h'},(err, token)=>{
                             res.json(
                                 {
                                     status: true,
