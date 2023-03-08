@@ -405,7 +405,7 @@ router.post('/clientes', verificarToken, (req, res)=>{
             let query=`INSERT INTO alumnos (dni, nombre, apellido, email,telefono, domicilio, fecha_creacion) VALUES ('${dni}','${nombre}','${apellido}','${email}','${telefono}', '${domicilio}', NOW())`;
             mysqlConeccion.query(query, (err, registros)=>{
                 if(!err){
-                    res.send('Se inserto correctamente nuestro cliente: '+apellido+' '+nombre);
+                    res.json(resultado.idclientes)
                 }else{
                     console.log(err)
                     res.send('El error es: '+err);
@@ -422,17 +422,47 @@ router.post('/insertarclientes', (req, res)=>{
     const { dni, nombre, apellido , email, telefono, domicilio } = req.body
     console.log(req.body);
     let query=`INSERT INTO clientes (dni, nombre, apellido, email, telefono, domicilio, fecha_creacion) VALUES ('${dni}','${nombre}','${apellido}','${email}','${telefono}', '${domicilio}', NOW())`;
-            mysqlConeccion.query(query, (err, registros)=>{
-                if(!err){
-                    res.send('Se inserto correctamente nuestro cliente: '+apellido+' '+nombre);
+            mysqlConeccion.query(query, (error, resultado)=>{
+                if(!error){
+                    res.json({
+
+                        status:true,
+                        mensaje:"mensajito de felicidad"
+                    });
                 }else{
                     console.log(err)
-                    res.send('El error es: '+err);
+                    res.send('El error es: '+error);
                 }
     })
 })
 
 //Sin verificacion de Token
+
+//Insertar Cliente relacionado a abogados
+
+router.post('/insertclients', function(req, res) {
+    // Capturar los datos del formulario
+    const { dni, nombre, apellido , email, telefono, domicilio, abogado_bond } = req.body
+    console.log("que llega en abogado bond", abogado_bond)
+    // Insertar un nuevo registro en la tabla "clientes"
+    mysqlConeccion.query(`INSERT INTO clientes (dni, nombre, apellido, email, telefono, domicilio, abogado_bond, fecha_creacion) VALUES ('${dni}','${nombre}','${apellido}','${email}','${telefono}', '${domicilio}', '${abogado_bond}', NOW())`, 
+    function(error, results, fields) {
+      if (error) throw error;
+  
+      // Capturar el ID del cliente recién insertado
+      const clienteId = results.insertId;
+  
+      // Insertar un nuevo registro en la tabla "abogadosxclientes" para relacionar al abogado con el cliente
+      mysqlConeccion.query('INSERT INTO abogadosxclientes (id_abogado, id_cliente, fecha) VALUES (?, ?, NOW())', [abogado_bond, clienteId], function(error, results, fields) {
+        if (error) throw error;
+  
+        // Enviar una respuesta al cliente
+        res.send('Cliente creado correctamente');
+      });
+    });
+  });
+
+//Insertar Cliente relacionado a abogados
 
     /////////////////////////////////////////
     //FIN - INSERTAR CLIENTES EN LA BASE DE DATOS//
