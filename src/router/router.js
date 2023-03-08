@@ -390,7 +390,65 @@ router.get('/clientes/:idclientes', (req, res)=>{
 //             }
 // })
 
+    /////////////////////////////////////////
+    //TRAER CONSULTAS DESDE LA BASE DE DATOS//
+    /////////////////////////////////////////
 
+router.get('/consultas', (req, res)=>{
+    // jwt.verify(req.token, 'siliconKey', (error, valido)=>{
+        // if(error){
+        //     res.sendStatus(403);
+        // }else{
+        mysqlConeccion.query('select * from consultas', (err, registro)=>{
+            if(!err){
+                res.json(registro);
+            }else{
+                console.log(err)
+            }
+        })
+        // }
+    // })
+});
+
+//Emvia un marcar LEIDO a la consulta
+
+router.put('/leidoconsultas/:id', (req, res)=>{
+
+    let id = req.params.id;
+    console.log("el parametro que recibo es:", id);
+     let query=`UPDATE dbweb.consultas SET leido='si' WHERE idconsultas='${id}'`;
+     mysqlConeccion.query(query, (err, registros)=>{
+        if(!err){
+            res.json({
+                status: true,
+                mensaje:"La consulta se marco como leido"
+            });
+        }else{
+            console.log(err)
+        }
+    })
+    
+});
+
+//NO LEIDO
+
+router.put('/noleidoconsultas/:id', (req, res)=>{
+
+    let id = req.params.id;
+    console.log("el parametro que recibo es:", id);
+     let query=`UPDATE dbweb.consultas SET leido='no' WHERE idconsultas='${id}'`;
+     mysqlConeccion.query(query, (err, registros)=>{
+        if(!err){
+            res.json({
+                status: true,
+                mensaje:"La consulta se marco como leido"
+            });
+        }else{
+            console.log(err)
+        }
+    })
+    
+});
 
     /////////////////////////////////////////
     //INSERTAR CLIENTES EN LA BASE DE DATOS//
