@@ -560,6 +560,26 @@ router.post('/abogadosxclientes', (req, res)=>{
         });  
 });
 
+// VISTA RELACIONADOS ABOGADOS POR CLIENTES
+
+router.get('/vistarelacion', (req, res)=>{
+    // jwt.verify(req.token, 'siliconKey', (error, valido)=>{
+        // if(error){
+        //     res.sendStatus(403);
+        // }else{
+        mysqlConeccion.query(`SELECT concat_ws(' ', ab.nombre, ab.apellido) AS ABOGADOS, concat_ws(' ', c.nombre, c.apellido) AS CLIENTES
+        FROM dbweb.abogados as ab
+        INNER JOIN dbweb.abogadosxclientes ON ab.idabogados = abogadosxclientes.id_abogado
+        INNER JOIN dbweb.clientes AS c ON abogadosxclientes.id_cliente = c.idclientes;`, (err, registro)=>{
+            if(!err){
+                res.json(registro);
+            }else{
+                console.log(err)
+            }
+        })
+        // }
+    // })
+});
     
     //////////////////////////////////////////////////////////////
     ////metodo para elimiinar los datos de un cliente en particular///
