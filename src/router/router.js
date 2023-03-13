@@ -97,7 +97,7 @@ router.put('/altaabogados/:idabogados', (req, res)=>{
 
 router.put('/bajaabogados/:idabogados', (req, res)=>{
     let id  = req.params.id;
-    let query=`UPDATE abogados SET estado='B' WHERE id_curso='${id}'`;
+    let query=`UPDATE abogados SET estado='B' WHERE idabogados='${id}'`;
 
      mysqlConeccion.query(query, (err, registros)=>{
         if(!err){
@@ -247,25 +247,11 @@ router.delete('/abogados/:idabogados', verificarToken, (req, res)=>{
     /////////////////////////////////////////
 
 
-// router.get('/alumnos', verificarToken, (req, res)=>{
-//     // res.send('Listado de alumnos');
-//     jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-//         if(error){
-//             res.sendStatus(403);
-//         }else{
-//             const query='select * from alumnos where estado="A"';
-//             mysqlConeccion.query(query, (err, rows)=>{
-//                 if(!err){
-//                     res.json(rows);
-//                 }else{
-//                     console.log(err)
-//                 }
-//             })
-//         }
-//     });    
-// });
-        router.get('/clientes', (req, res)=>{
-        
+        router.get('/clientes', verificarToken, (req, res)=>{
+            jwt.verify(req.token, 'siliconKey', (error)=>{
+                if(error){
+                    res.sendStatus(403);
+                }else{
                 const query='select * from clientes ';
                 mysqlConeccion.query(query, (err, rows)=>{
                     if(!err){
@@ -274,20 +260,26 @@ router.delete('/abogados/:idabogados', verificarToken, (req, res)=>{
                         console.log(err)
                     }
                 })
-            
-         
+            }
+         }) 
     });
 
 
 // GET CLIENTES BY ID
 
-router.get('/clientes/:idclientes', (req, res)=>{
+router.get('/clientes/:idclientes', verificarToken, (req, res)=>{
     const { idclientes } = req.params;
-    mysqlConeccion.query('select * from dbweb.clientes WHERE idclientes=?', [idclientes], (err, registros)=>{
-        if(!err){
-            res.json(registros);
+    jwt.verify(req.token, 'siliconKey', (error)=>{
+        if(error){
+            res.sendStatus(403);
         }else{
-            console.log(err)
+                mysqlConeccion.query('select * from dbweb.clientes WHERE idclientes=?', [idclientes], (err, registros)=>{
+                    if(!err){
+                        res.json(registros);
+                    }else{
+                        console.log(err)
+                    }
+                 })
         }
     })
 });
@@ -479,6 +471,10 @@ router.post('/clientes', verificarToken, (req, res)=>{
 router.post('/insertarclientes', (req, res)=>{
     const { dni, nombre, apellido , email, telefono, domicilio } = req.body
     console.log(req.body);
+    jwt.verify(req.token, 'siliconKey', (error, valido)=>{
+        if(error){
+            res.sendStatus(403);
+        }else{
     let query=`INSERT INTO clientes (dni, nombre, apellido, email, telefono, domicilio, fecha_creacion) VALUES ('${dni}','${nombre}','${apellido}','${email}','${telefono}', '${domicilio}', NOW())`;
             mysqlConeccion.query(query, (error, resultado)=>{
                 if(!error){
@@ -491,6 +487,8 @@ router.post('/insertarclientes', (req, res)=>{
                     console.log(err)
                     res.send('El error es: '+error);
                 }
+            })
+        }
     })
 })
 
@@ -498,27 +496,34 @@ router.post('/insertarclientes', (req, res)=>{
 
 //Insertar Cliente relacionado a abogados
 
-router.post('/insertclients', function(req, res) {
+router.post('/insertclients', verificarToken, function(req, res) {
+
     // Capturar los datos del formulario
     const { dni, nombre, apellido , email, telefono, domicilio, abogado_bond } = req.body
     console.log("que llega en abogado bond", abogado_bond)
     // Insertar un nuevo registro en la tabla "clientes"
-    mysqlConeccion.query(`INSERT INTO clientes (dni, nombre, apellido, email, telefono, domicilio, abogado_bond, fecha_creacion) VALUES ('${dni}','${nombre}','${apellido}','${email}','${telefono}', '${domicilio}', '${abogado_bond}', NOW())`, 
-    function(error, results, fields) {
-      if (error) throw error;
-  
-      // Capturar el ID del cliente recién insertado
-      const clienteId = results.insertId;
-  
-      // Insertar un nuevo registro en la tabla "abogadosxclientes" para relacionar al abogado con el cliente
-      mysqlConeccion.query('INSERT INTO abogadosxclientes (id_abogado, id_cliente, fecha) VALUES (?, ?, NOW())', [abogado_bond, clienteId], function(error, results, fields) {
-        if (error) throw error;
-  
-        // Enviar una respuesta al cliente
-        res.send('Cliente creado correctamente');
-      });
-    });
-  });
+    jwt.verify(req.token, 'siliconKey', (error)=>{
+        if(error){
+            res.sendStatus(403);
+        }else{
+                    mysqlConeccion.query(`INSERT INTO clientes (dni, nombre, apellido, email, telefono, domicilio, abogado_bond, fecha_creacion) VALUES ('${dni}','${nombre}','${apellido}','${email}','${telefono}', '${domicilio}', '${abogado_bond}', NOW())`, 
+                    function(error, results, fields) {
+                    if (error) throw error;
+                
+                    // Capturar el ID del cliente recién insertado
+                    const clienteId = results.insertId;
+                
+                    // Insertar un nuevo registro en la tabla "abogadosxclientes" para relacionar al abogado con el cliente
+                    mysqlConeccion.query('INSERT INTO abogadosxclientes (id_abogado, id_cliente, fecha) VALUES (?, ?, NOW())', [abogado_bond, clienteId], function(error, results, fields) {
+                        if (error) throw error;
+                
+                        // Enviar una respuesta al cliente
+                        res.send('Cliente creado correctamente');
+                    });
+                });
+            } 
+        })
+})
 
 //Insertar Cliente relacionado a abogados
 
@@ -613,20 +618,25 @@ router.delete('/clientes/:idclientes', verificarToken ,(req, res)=>{
     ////metodo para editar los datos de un cliente en particular///
     ////////////////////////////////////////////////////////////
 
-router.put('/clientes/:idclientes' , (req, res)=>{
+router.put('/clientes/:idclientes', verificarToken, (req, res)=>{
     //asigna a idclientes el valor que recibe por el parametro 
     let idclientes  = req.params.idclientes;
     const { dni, nombre, apellido , email, telefono, domicilio } =req.body  
     console.log(req.body)
-    let query=`UPDATE dbweb.clientes SET dni='${dni}', nombre='${nombre}', apellido='${apellido}', email='${email}', telefono='${telefono}', domicilio='${domicilio}', fecha_modificacion=NOW() WHERE idclientes='${idclientes}'`;
-    mysqlConeccion.query(query, (err, registros)=>{
-        if(!err){
-            res.send('El Id que editamos es : '+idclientes+' y cambiamos muchos campos!!');
+    jwt.verify(req.token, 'siliconKey', (error)=>{
+        if(error){
+            res.sendStatus(403);
         }else{
-            console.log(err)
-        }
-    })
-       
+                let query=`UPDATE dbweb.clientes SET dni='${dni}', nombre='${nombre}', apellido='${apellido}', email='${email}', telefono='${telefono}', domicilio='${domicilio}', fecha_modificacion=NOW() WHERE idclientes='${idclientes}'`;
+                mysqlConeccion.query(query, (err, registros)=>{
+                    if(!err){
+                        res.send('El Id que editamos es : '+idclientes+' y cambiamos muchos campos!!');
+                    }else{
+                        console.log(err)
+                    }
+                })
+            }
+        })    
 });
 
     ////////////////////////////////////////////////////////////////
