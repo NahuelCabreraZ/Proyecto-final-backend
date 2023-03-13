@@ -69,6 +69,28 @@ router.put('/cambioestadoabogados/:idabogados', (req, res)=>{
     // FIN - CAMBIO DE ESTADO ABOGADOS EN LA BASE DE DATOS//
     ////////////////////////////////////////////////////////
 
+    // EDITAR ABOGADO METODO PUT //
+
+    router.put('/abogados/:idabogados', verificarToken, (req, res)=>{
+        //asigna a idclientes el valor que recibe por el parametro 
+        let idabogados  = req.params.idabogados;
+        const { nombre, apellido, matricula, email, telefono } =req.body  
+        console.log(req.body)
+        jwt.verify(req.token, 'siliconKey', (error)=>{
+            if(error){
+                res.sendStatus(403);
+            }else{
+                    let query=`UPDATE dbweb.abogados SET nombre='${nombre}', apellido='${apellido}', matricula='${matricula}', email='${email}', telefono='${telefono}' WHERE idabogados='${idabogados}'`;
+                    mysqlConeccion.query(query, (err, registros)=>{
+                        if(!err){
+                            res.send('El Id que editamos es : '+idabogados+' y cambiamos muchos campos!!');
+                        }else{
+                            console.log(err)
+                        }
+                    })
+                }
+            })    
+    });
 
     /////////////////////////////////////////
     //ALTA y BAJA ABOGADOS EN LA BASE DE DATOS//
@@ -121,8 +143,11 @@ router.put('/bajaabogados/:idabogados', (req, res)=>{
 
 
 
-router.get('/abogados/:idabogados',(req, res)=>{
-
+router.get('/abogados/:idabogados', verificarToken, (req, res)=>{
+    jwt.verify(req.token, 'siliconKey', (error)=>{
+        if(error){
+            res.sendStatus(403);
+        }else{
         const  { idabogados } = req.params;
                 mysqlConeccion.query('select * from abogados where idabogados=?',[idabogados], (err, registros)=>{
                     if(!err){
@@ -131,7 +156,8 @@ router.get('/abogados/:idabogados',(req, res)=>{
                         console.log(err)
                     }
                 })
-       
+            }
+        })
     });
 
     /////////////////////////////////////////
