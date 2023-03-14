@@ -4,9 +4,9 @@ const router = express();
 const bcrypt= require('bcrypt');
 // libreria que utilizaremos para la generacion de nuesrto token
 const jwt= require('jsonwebtoken');
-//////archivo de coneccion
+//////archivo de conexion
 const mysqlConeccion = require('../database/database');
-//////fin archivo de coneccion
+//////fin archivo de conexion
 
 ///////RUTA RAÍZ///////////////
 router.get('/', (req, res)=>{
