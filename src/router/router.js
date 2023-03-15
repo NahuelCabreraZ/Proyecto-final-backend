@@ -143,11 +143,11 @@ router.put('/bajaabogados/:idabogados', (req, res)=>{
 
 
 
-router.get('/abogados/:idabogados', verificarToken, (req, res)=>{
-    jwt.verify(req.token, 'siliconKey', (error)=>{
-        if(error){
-            res.sendStatus(403);
-        }else{
+router.get('/abogados/:idabogados', (req, res)=>{
+    // jwt.verify(req.token, 'siliconKey', (error)=>{
+    //     if(error){
+    //         res.sendStatus(403);
+    //     }else{
         const  { idabogados } = req.params;
                 mysqlConeccion.query('select * from abogados where idabogados=?',[idabogados], (err, registros)=>{
                     if(!err){
@@ -156,8 +156,8 @@ router.get('/abogados/:idabogados', verificarToken, (req, res)=>{
                         console.log(err)
                     }
                 })
-            }
-        })
+            //}
+        //})
     });
 
     /////////////////////////////////////////
@@ -316,97 +316,6 @@ router.get('/clientes/:idclientes', verificarToken, (req, res)=>{
     //FIN - LISTAR CLIENTES DE LA BASE DE DATOS//
     /////////////////////////////////////////
 
-
-
-// router.get('/alumnos_cantidad_cursos', verificarToken, (req, res)=>{
-//     // res.send('Listado de alumnos');
-//     jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-//         if(error){
-//             res.sendStatus(403);
-//         }else{
-//             const query='SELECT T.id_alumno, T.alumno, T.cantidad_cursos, T.sexo from (SELECT A.id_alumno, CONCAT_WS(" ", A.apellido, A.nombre ) alumno, sexo, COUNT(id_alumno_curso) cantidad_cursos FROM alumnos as A inner join alumno_curso as AC ON AC.id_alumno=A.id_alumno LEFT join curso C ON C.id_curso=AC.id_curso where estado = "A" GROUP by id_alumno) AS T order by T.cantidad_cursos DESC';
-//             mysqlConeccion.query(query, (err, rows)=>{
-//                 if(!err){
-//                     res.json(rows);
-//                 }else{
-//                     console.log(err)
-//                 }
-//             })
-//         }
-//     });    
-// });
-
-// // Devolver los datos de un alumno puntual que recibamos el ID
-// router.get('/alumnos/:id_alumno', verificarToken, (req, res)=>{
-//     const  parametro  = req.params.id_alumno;
-//     if(esNumero(parametro)){
-//         res.json(
-//             {
-//                 status: false,
-//                 mensaje:"El parametro que se espera tiene ser un numero entero"
-//             });
-//     }else{
-//         jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-//             if(error){
-//                 // console.log(' entra aca')
-//                 res.sendStatus(403);
-//             }else{
-//                 mysqlConeccion.query('select * from alumnos where id_alumno=?',[parametro], (err, rows)=>{
-//                     if(!err){
-//                         if(rows.length!=0){
-//                             res.json(rows);
-//                         }else{
-//                             res.json(
-//                                 {
-//                                     status: false,
-//                                     mensaje:"El ID del alumno no existe en la base de datos."
-//                                 });
-//                         }    
-//                     }else{
-//                         res.json(
-//                         {
-//                             status: false,
-//                             mensaje:"Error en el servidor."
-//                         });
-//                     }
-//                 });
-                
-//             }
-//         });
-//     }
-// })
-
-// router.get('/alumnos/:id_alumno', (req, res)=>{
-//     const  parametro  = req.params.id_alumno;
-//     if(esNumero(parametro)){
-//         res.json(
-//             {
-//                 status: false,
-//                 mensaje:"El parametro que se espera tiene ser un numero entero"
-//             });
-//     }else{
-//                 mysqlConeccion.query('select *, DATE_FORMAT(fecha_nacimiento, "%Y-%m-%d") as fecha_formateada from alumnos where id_alumno=?',[parametro], (err, rows)=>{
-//                     if(!err){
-//                         if(rows.length!=0){
-//                             res.json(rows);
-//                         }else{
-//                             res.json(
-//                                 {
-//                                     status: false,
-//                                     mensaje:"El ID del alumno no existe en la base de datos."
-//                                 });
-//                         }    
-//                     }else{
-//                         res.json(
-//                         {
-//                             status: false,
-//                             mensaje:"Error en el servidor."
-//                         });
-//                     }
-//                 });
-                
-//             }
-// })
 
     /////////////////////////////////////////
     //TRAER CONSULTAS DESDE LA BASE DE DATOS//
@@ -723,28 +632,6 @@ router.put('/altacliente/:id', (req, res)=>{
     ///////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
 
-// router.put('/alumnos/:id',verificarToken , (req, res)=>{
-//     //asigna a id_curso el valor que recibe por el parametro 
-//     let id_alumno  = req.params.id;
-//     //asigna el valor que recibe  en el Body 
-//     const { apellido, nombre, dni , fecha_nacimiento, sexo, domicilio, estado_civil } =req.body  
-//     jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-//         if(error){
-            
-//             res.sendStatus(403);
-//         }else{
-//             let query=`UPDATE alumnos SET apellido='${apellido}', nombre='${nombre}', dni='${dni}', fecha_nacimiento='${fecha_nacimiento}', estado_civil='${estado_civil}', sexo='${sexo}', domicilio='${domicilio}', fecha_modificacion=NOW() WHERE id_alumno='${id_alumno}'`;
-//             mysqlConeccion.query(query, (err, registros)=>{
-//                 if(!err){
-//                     res.send('El Id que editamos es : '+id_alumno+' y cambiamos muchos campos!!');
-//                 }else{
-//                     console.log(err)
-//                 }
-//             })
-//         }
-//     })
-// });
-
 
 
 ///////////////////////////////////////////////////////
@@ -756,22 +643,6 @@ router.put('/altacliente/:id', (req, res)=>{
 ///////////////////////////////////////////////////////
 
 
-
-// router.get('/usuarios', verificarToken, (req, res)=>{
-
-//         jwt.verify(req.token, 'siliconKey', (error, valido)=>{
-//         if(error){
-//             res.sendStatus(403);
-//         }else{
-//             mysqlConeccion.query('select * from usuarios', (err, registro)=>{
-//         if(!err){
-//             // console.log(registro.length)
-//             res.json(registro);
-//         }else{
-//             console.log(err)
-//         }
-//     })
-// }
 
     //////////////////////////////////////////////////////////////
     ////metodo para listar todos los usuarios registrados///
